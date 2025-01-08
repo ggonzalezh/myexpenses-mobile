@@ -4,9 +4,10 @@ import { User } from '@/domain/model/User.ts'
 
 export class UserHttpToUser extends Mapper<UserHttp, User> {
   map(userHttp: UserHttp): User {
-    const { id, username, roles } = userHttp
+    const { id, access_token, username, roles } = userHttp
     return {
       id,
+      accessToken: access_token,
       username,
       roles
     }

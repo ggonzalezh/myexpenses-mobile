@@ -1,6 +1,10 @@
 import { z } from 'zod'
+import { useNavigate, useRouteContext } from '@tanstack/react-router'
+import { useMutation } from '@tanstack/react-query'
+import { Login } from '@/domain/model/Login.ts'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { User } from '@/domain/model/User.ts'
 import { Card, CardFooter } from '@/ui/components/card.tsx'
 import {
   Form,
@@ -12,6 +16,7 @@ import {
 } from '@/ui/components/form.tsx'
 import { Input } from '@/ui/components/input.tsx'
 import { Button } from '@/ui/components/button.tsx'
+import { LoginViewProps } from '@/ui/views/login/interface'
 
 const formSchema = z.object({
   username: z.string().min(4, {
@@ -22,7 +27,20 @@ const formSchema = z.object({
   })
 })
 
-export const LoginView = () => {
+export const LoginView = ({ postLoginUseCase }: LoginViewProps) => {
+  const navigate = useNavigate()
+  const { authentication, session, tauriStorage } = useRouteContext({
+    from: '/login'
+  })
+  const { setItem } = tauriStorage
+  const { sigIn } = authentication
+  const { setSession } = session
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (login: Login) => postLoginUseCase.execute(login),
+    onError: () => console.log('ERROR')
+  })
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -31,12 +49,26 @@ export const LoginView = () => {
     }
   })
 
+  const onSubmit = async (
+    values: z.infer<typeof formSchema>
+  ): Promise<void> => {
+    const { username, password } = values
+    const userData: User = await mutateAsync({
+      username,
+      password
+    })
+    await setItem('accessToken', userData.accessToken)
+    setSession(userData)
+    sigIn()
+    await navigate({ to: '/dashboard' })
+  }
+
   return (
-    <div className='w-full min-h-screen flex content-center items-center'>
+    <div className='w-full flex items-center'>
       <div className='w-full m-6 sm:flex sm:justify-center'>
         <Card className='p-8 sm:w-2/5 sm:p-11'>
           <Form {...form}>
-            <form onSubmit={() => console.log('Work in progress')}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
                 name='username'
@@ -66,7 +98,12 @@ export const LoginView = () => {
                 />
               </div>
               <CardFooter className='p-0 mt-8 sm:justify-center'>
-                <Button className='w-full lg:w-1/4' type='submit'>
+                <Button
+                  isLoading={isPending}
+                  isDisabled={isPending}
+                  className='w-full lg:w-1/4'
+                  type='submit'
+                >
                   Ingresar
                 </Button>
               </CardFooter>
