@@ -6,7 +6,7 @@ import { TauriStorage } from '@/ui/hooks/useTauriStorage.ts'
 
 const RootComponent = () => {
   return (
-    <div className='flex min-h-screen'>
+    <div className='h-screen w-screen'>
       <Outlet />
     </div>
   )

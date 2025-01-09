@@ -1,5 +1,6 @@
 export const sessionDefaultValue = {
   id: '',
   username: '',
-  roles: []
+  roles: [],
+  accessToken: ''
 }

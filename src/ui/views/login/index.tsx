@@ -5,7 +5,7 @@ import { Login } from '@/domain/model/Login.ts'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { User } from '@/domain/model/User.ts'
-import { Card, CardFooter } from '@/ui/components/card.tsx'
+import { Card, CardFooter } from '@/ui/components/shadcn/card.tsx'
 import {
   Form,
   FormControl,
@@ -13,9 +13,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from '@/ui/components/form.tsx'
-import { Input } from '@/ui/components/input.tsx'
-import { Button } from '@/ui/components/button.tsx'
+} from '@/ui/components/shadcn/form.tsx'
+import { Input } from '@/ui/components/shadcn/input.tsx'
+import { Button } from '@/ui/components/shadcn/button.tsx'
 import { LoginViewProps } from '@/ui/views/login/interface'
 
 const formSchema = z.object({
